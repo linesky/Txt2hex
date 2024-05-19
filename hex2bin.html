@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hexadecimal to Text Converter</title>
+<style>
+  body {
+    background-color: yellow;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  textarea {
+    width: 500px;
+    height: 200px;
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+  }
+</style>
+</head>
+<body>
+<input type="file" id="file-selector" >
+<textarea id="hexInput" placeholder="Paste hexadecimal content here, separated by commas"></textarea>
+<button id="convertButton">Convert to Text</button>
+<button id="saves">save</button>
+
+<textarea id="textOutput" placeholder="Text output will appear here"></textarea>
+
+<script>
+  function isValidHex(hex) {
+    return /^[0-9a-fA-F]{2}$/.test(hex);
+  }
+
+  document.getElementById('convertButton').addEventListener('click', function() {
+    const hexInput = document.getElementById('hexInput').value.trim();
+    var hexInputs=hexInput.replace("\r","");
+    const lines = hexInputs.split('\n');
+    let textOutput = '';
+
+    lines.forEach(line => {
+      const hexValues = line.split(',').map(value => value.trim());
+      hexValues.forEach(hex => {
+        if (!isValidHex(hex)) {
+          hex = '00'; // Default value for invalid hex
+        }
+        textOutput += String.fromCharCode(parseInt(hex, 16));
+      });
+      textOutput += '\n';
+    });
+
+    document.getElementById('textOutput').value = textOutput;
+  });
+</script>
+<script>
+    codeInput = document.getElementById('hexInput');
+    const fileSelector = document.getElementById('file-selector');
+    fileSelector.addEventListener('change', (event) => {
+        const fileList = event.target.files[0];
+        
+      var reader = new FileReader();
+      reader.readAsText(fileList);
+    reader.onload =readerEvent => {
+        var values=readerEvent.target.result;
+        codeInput.value=values;
+    }
+     
+    });
+ 
+</script>
+<script>
+    const saveBtn = document.getElementById('saves');
+    
+    
+    saveBtn.addEventListener('click', function(){
+        let name =prompt("filename","new");
+        var tempLink = document.createElement("a");
+
+        var codeInput = document.getElementById("textOutput");
+       
+       var taBlob = new Blob([codeInput.value], {type: 'text/plain'});
+       tempLink.setAttribute('href', URL.createObjectURL(taBlob));
+    tempLink.setAttribute('download', `${name.toLowerCase()}.bin`);
+    tempLink.click();
+
+    URL.revokeObjectURL(tempLink.href);
+});
+  </script>
+
+</body>
+</html>
